@@ -23,7 +23,7 @@ sub encode_chunks
         {
             if($chunk =~ /^(.*)\n$/)
             {
-                push $unencoded_lines, $1;
+                push @$unencoded_lines, $1;
             }
             else
             {
