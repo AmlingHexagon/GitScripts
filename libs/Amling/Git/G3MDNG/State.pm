@@ -5,6 +5,7 @@ use warnings;
 
 use Amling::Git::G3MDNG::Algo;
 use Amling::Git::G3MDNG::Utils;
+use File::Temp ('tempfile');
 
 my $hash = \&Amling::Git::G3MDNG::Utils::hash;
 
@@ -353,12 +354,123 @@ sub maybe_auto_diff3
     my $s = shift;
     my $e = shift;
 
-    my $blocks = $this->{'BLOCKS'};
-    my $old_blocks = [@$blocks[$s..($e - 1)]];
+    my $all_blocks = $this->{'BLOCKS'};
+    my $old_blocks = [@$all_blocks[$s..($e - 1)]];
     my $new_blocks = Amling::Git::G3MDNG::Algo::diff3_blocks($old_blocks);
 
     return if($hash->($old_blocks) eq $hash->($new_blocks));
-    $this->splice($s, $e, $new_blocks, "auto diff3", 1);
+
+    while(1)
+    {
+        print "Auto diff3 possible, apply? [Y/n/e]\n";
+        print "> ";
+        my $ans = <>;
+        chomp $ans;
+        $ans = lc($ans);
+
+        if($ans eq 'y' || $ans eq '')
+        {
+            $this->splice($s, $e, $new_blocks, "auto diff3", 1);
+            return;
+        }
+
+        if($ans eq 'n')
+        {
+            return;
+        }
+
+        if($ans eq 'e')
+        {
+            my ($fh1, $fn1) = tempfile('SUFFIX' => '.old');
+            my ($fh2, $fn2) = tempfile('SUFFIX' => '.new');
+
+            my @all_chunkses;
+            for my $blocks ($old_blocks, $new_blocks)
+            {
+                for my $block (@$blocks)
+                {
+                    my ($type, @rest) = @$block;
+                    if(0)
+                    {
+                    }
+                    elsif($type eq 'RESOLVED')
+                    {
+                        my ($chunk) = @rest;
+                        push @all_chunkses, [$chunk];
+                    }
+                    elsif($type eq 'CONFLICT')
+                    {
+                        my ($lhs_chunks, $mhs_chunks, $rhs_chunks) = @rest;
+                        push @all_chunkses, $lhs_chunks, $mhs_chunks, $rhs_chunks;
+                    }
+                    else
+                    {
+                        die;
+                    }
+                }
+            }
+
+            my ($is_encoded, @all_lineses) = @{Amling::Git::G3MDNG::Utils::encode_chunks(@all_chunkses)};
+
+            for my $tuple ([$fh1, $fn1, $old_blocks], [$fh2, $fn2, $new_blocks])
+            {
+                my ($fh, $fn, $blocks) = @$tuple;
+                for my $block (@$blocks)
+                {
+                    my ($type, @rest) = @$block;
+                    if(0)
+                    {
+                    }
+                    elsif($type eq 'RESOLVED')
+                    {
+                        my ($chunk) = @rest;
+                        my $lines = shift @all_lineses;
+                        for my $line (@$lines)
+                        {
+                            print $fh "$line\n";
+                        }
+                    }
+                    elsif($type eq 'CONFLICT')
+                    {
+                        my ($lhs_chunks, $mhs_chunks, $rhs_chunks) = @rest;
+                        my $lhs_lines = shift @all_lineses;
+                        my $mhs_lines = shift @all_lineses;
+                        my $rhs_lines = shift @all_lineses;
+                        print $fh "<<<<<<<\n";
+                        for my $line (@$lhs_lines)
+                        {
+                            print $fh "$line\n";
+                        }
+                        print $fh "|||||||\n";
+                        for my $line (@$mhs_lines)
+                        {
+                            print $fh "$line\n";
+                        }
+                        print $fh "=======\n";
+                        for my $line (@$rhs_lines)
+                        {
+                            print $fh "$line\n";
+                        }
+                        print $fh ">>>>>>>\n";
+                    }
+                    else
+                    {
+                        die;
+                    }
+                }
+                close($fh) || die "Cannot close temp file $fn: $!";
+            }
+
+            system('vimdiff', '-R', $fn1, $fn2) && die "Edit of files bailed?";
+
+            unlink($fn1) || die "Cannot unlink temp file $fn1: $!";
+            unlink($fn2) || die "Cannot unlink temp file $fn2: $!";
+
+            next;
+        }
+
+        print "?\n";
+    }
 }
 
 1;
