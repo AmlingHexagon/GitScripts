@@ -3,7 +3,6 @@ package Amling::Git::G3MDNG::Command::BaseReplace;
 use strict;
 use warnings;
 
-use Amling::Git::G3MDNG::Algo;
 use Amling::Git::G3MDNG::Command::Base;
 
 use base ('Amling::Git::G3MDNG::Command::Base');
@@ -34,11 +33,9 @@ sub handle2
     {
         return 1;
     }
-
-    my $newer_blocks = Amling::Git::G3MDNG::Algo::diff3_blocks($new_blocks);
-
-    $state->splice($pos, $pos + @$new_blocks, $newer_blocks, "auto diff3", 1);
     $state->mark_dirty();
+
+    $state->maybe_auto_diff3($pos, $pos + @$new_blocks);
 
     return 1;
 }

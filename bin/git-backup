@@ -139,7 +139,7 @@ my %local_names;
 my $require_force;
 my @specs;
 {
-    for my $name (keys(%local_names))
+    for my $name (sort(keys(%local_names)))
     {
         my $remote_hash = delete $remote_names{$name};
         my $local_hash = $local_names{$name};

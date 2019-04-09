@@ -58,8 +58,7 @@ sub run_file
     my $state = Amling::Git::G3MDNG::State->new($blocks0);
     my $memory = 'Amling::Git::G3MDNG::Memory';
 
-    my $blocks1 = Amling::Git::G3MDNG::Algo::diff3_blocks($blocks0);
-    $state->splice(0, scalar(@$blocks0), $blocks1, "auto diff3", 1);
+    $state->maybe_auto_diff3(0, scalar(@$blocks0));
 
     while(1)
     {

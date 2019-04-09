@@ -25,6 +25,16 @@ sub handle_simple
     my $conflict = shift;
     my ($lhs_title, $lhs_lines, $mhs_title, $mhs_lines, $rhs_title, $rhs_lines) = @$conflict;
 
+    return invoke_gmf($lhs_lines, $mhs_lines, $rhs_lines, ['-L', $lhs_title, '-L', $mhs_title, '-L', $rhs_title]);
+}
+
+sub invoke_gmf
+{
+    my $lhs_lines = shift;
+    my $mhs_lines = shift;
+    my $rhs_lines = shift;
+    my $extra_args = shift || [];
+
     my ($fh1, $fn1) = tempfile('SUFFIX' => '.lhs.conflict');
     my ($fh2, $fn2) = tempfile('SUFFIX' => '.mhs.conflict');
     my ($fh3, $fn3) = tempfile('SUFFIX' => '.rhs.conflict');
@@ -46,7 +56,7 @@ sub handle_simple
     close($fh2) || die "Cannot close temp file $fn2: $!";
     close($fh3) || die "Cannot close temp file $fn3: $!";
 
-    open(my $fh, '-|', 'git', 'merge-file', '--diff3', '-L', $lhs_title, '-L', $mhs_title, '-L', $rhs_title, '-p', '-q', $fn1, $fn2, $fn3) || die "Cannot open git merge-file ...: $!";
+    open(my $fh, '-|', 'git', 'merge-file', '--diff3', @$extra_args, '-p', '-q', $fn1, $fn2, $fn3) || die "Cannot open git merge-file ...: $!";
     my @lines;
     while(my $line = <$fh>)
     {
