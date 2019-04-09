@@ -7,7 +7,6 @@ use Amling::Git::G3MDNG::Command::BaseReplace;
 use Amling::Git::G3MDNG::Utils;
 use Amling::Git::Utils;
 use File::Temp ('tempfile');
-use Text::Diff3;
 
 use base ('Amling::Git::G3MDNG::Command::BaseReplace');
 
