@@ -37,10 +37,13 @@ sub execute_simple
     my @parents1 = map { Amling::Git::GRD::Command::Load::convert_arg("Merge", $ctx, $_) } @_;
 
     my $ok = 0;
+    my $msg;
     {
-        open(my $fh, '-|', 'git', 'log', '-1', $template, '--format=%P') || die "Cannot open log -1 $template: $!";
+        open(my $fh, '-|', 'git', 'log', '-1', $template, '--format=%P%n%B') || die "Cannot open log -1 $template: $!";
         my $line = <$fh> || die "Could not read log -1 $template";
         chomp $line;
+        $msg = join("", <$fh>) || die "Could not read log -1 $template";
+        chomp $msg;
         if($line eq join(" ", $parent0, @parents1))
         {
             $ok = 1;
@@ -52,14 +55,12 @@ sub execute_simple
     {
         print "Fast-forward merging $template...\n";
         $ctx->set_head($template);
-        $ctx->run_hooks('post-merge', {'PARENT0' => $parent0, 'PARENTS1' => join(' ', @parents1)});
+        # Don't run hooks in this case?  Parallels pick, but is definitely
+        # debatable...
+        return;
     }
-    else
-    {
-        my $merge_delegate = Amling::Git::GRD::Command::Merge->new($parent0, @parents1);
 
-        $merge_delegate->execute($ctx);
-    }
+    Amling::Git::GRD::Command::Merge::merge_common($ctx, $parent0, \@parents1, $msg);
 }
 
 Amling::Git::GRD::Command::add_command(sub { return __PACKAGE__->handler(@_) });
