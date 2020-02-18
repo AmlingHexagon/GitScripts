@@ -50,50 +50,49 @@ sub execute_simple
         'COMMIT' => $commit,
     };
 
-    # if $commit's parent is us we're "picking" a change one down the line, we
-    # can just fast-forward to it
-    if(Amling::Git::Utils::convert_commitlike("$commit^") eq $ctx->get_head())
+    # if $commit's parent is us we're "picking" a change one down the line, and
+    # if we have no message to amend with we can just fast-forward to it
+    if(Amling::Git::Utils::convert_commitlike("$commit^") eq $ctx->get_head() && !defined($msg))
     {
         print "Fast-forward cherry-picking $commit...\n";
         $ctx->set_head($commit);
+        return;
     }
-    else
+
+    $ctx->materialize_head();
+    if(!Amling::Git::Utils::run_system("git", "cherry-pick", $commit))
     {
-        $ctx->materialize_head();
-        if(!Amling::Git::Utils::run_system("git", "cherry-pick", $commit))
+        if(Amling::Git::Utils::is_clean())
         {
-            if(Amling::Git::Utils::is_clean())
-            {
-                print "git cherry-pick of $commit blew chunks, but we're clean, assuming skip...\n";
-                return;
-            }
-
-            print "git cherry-pick of $commit blew chunks, please clean it up (get correct version into index)...\n";
-            Amling::Git::GRD::Utils::run_shell(1, 1, 0, $env);
-            print "Continuing...\n";
-
-            if(Amling::Git::Utils::is_clean())
-            {
-                print "Shell left clean, assuming skip...\n";
-                $ctx->uptake_head();
-                return;
-            }
-
-            if(defined($msg))
-            {
-                # allow edit since we would normally
-                Amling::Git::Utils::run_system("git", "commit", "-m", $msg, "-e") || die "Cannot commit?";
-
-                # no further amendment required
-                $msg = undef;
-            }
-            else
-            {
-                Amling::Git::Utils::run_system("git", "commit", "-c", $commit) || die "Cannot commit?";
-            }
+            print "git cherry-pick of $commit blew chunks, but we're clean, assuming skip...\n";
+            return;
         }
-        $ctx->uptake_head();
+
+        print "git cherry-pick of $commit blew chunks, please clean it up (get correct version into index)...\n";
+        Amling::Git::GRD::Utils::run_shell(1, 1, 0, $env);
+        print "Continuing...\n";
+
+        if(Amling::Git::Utils::is_clean())
+        {
+            print "Shell left clean, assuming skip...\n";
+            $ctx->uptake_head();
+            return;
+        }
+
+        if(defined($msg))
+        {
+            # allow edit since we would normally
+            Amling::Git::Utils::run_system("git", "commit", "-m", $msg, "-e") || die "Cannot commit?";
+
+            # no further amendment required
+            $msg = undef;
+        }
+        else
+        {
+            Amling::Git::Utils::run_system("git", "commit", "-c", $commit) || die "Cannot commit?";
+        }
     }
+    $ctx->uptake_head();
 
     if(defined($msg))
     {
@@ -102,7 +101,8 @@ sub execute_simple
         $ctx->uptake_head();
     }
 
-    # note we intentionally do not run this for changes that didn't actually get picked
+    # note we intentionally do not run this for changes that didn't actually
+    # get picked (i.e.  that bounced out anywhere above)
     $ctx->run_hooks('post-pick', $env);
 }
 
