@@ -1,4 +1,4 @@
-package Amling::Git::GRD::Command::CachedMerge;
+package Amling::Git::GRD::Command::TemplateMerge;
 
 use strict;
 use warnings;
@@ -15,7 +15,7 @@ use base 'Amling::Git::GRD::Command::Simple';
 
 sub name
 {
-    return "cached-merge";
+    return "template-merge";
 }
 
 sub min_args

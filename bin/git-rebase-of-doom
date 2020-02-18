@@ -211,9 +211,8 @@ merge (tag:<tag> | <commitlike>)+
     Check out the first saved tag or commitlike and then merge the remaining
     saved tags and commitlikes into it.
 
-cached-merge <template> (tag:<tag> | <commitlike>)+
-    As merge but if <template> has the exact same parents reuse it directly
-    rather than repeating the merge.
+template-merge <template> (tag:<tag> | <commitlike>)+
+    As merge but generally try to reuse data from <template> commit.
 
 pick <commitlike> [<message>]
     Cherry-pick a commit, then optionally alter its message (without

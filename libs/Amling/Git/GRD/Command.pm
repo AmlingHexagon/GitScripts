@@ -31,7 +31,6 @@ sub parse
 }
 
 use Amling::Git::GRD::Command::Branch;
-use Amling::Git::GRD::Command::CachedMerge;
 use Amling::Git::GRD::Command::Edit;
 use Amling::Git::GRD::Command::FSplatter;
 use Amling::Git::GRD::Command::Fixup;
@@ -49,6 +48,7 @@ use Amling::Git::GRD::Command::Save;
 use Amling::Git::GRD::Command::Shell;
 use Amling::Git::GRD::Command::Splatter;
 use Amling::Git::GRD::Command::Squash;
+use Amling::Git::GRD::Command::TemplateMerge;
 use Amling::Git::GRD::Command::Verify;
 
 1;

@@ -369,7 +369,7 @@ sub build_nodes
     else
     {
         my @new_parents;
-        my $merge_command = "cached-merge $target";
+        my $merge_command = "template-merge $target";
 
         for my $parent (@mparents)
         {
