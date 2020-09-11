@@ -44,7 +44,9 @@ sub run
         my $blocks = $files->{$file}->{'blocks'};
         my $save = $files->{$file}->{'save'};
 
-        $this->run_file($file, $blocks, $save);
+        my $text = $this->run_file($file, $blocks);
+
+        $save->($text);
     }
 }
 
@@ -53,7 +55,6 @@ sub run_file
     my $this = shift;
     my $file = shift;
     my $blocks0 = shift;
-    my $save = shift;
 
     my $state = Amling::Git::G3MDNG::State->new($blocks0);
     my $memory = 'Amling::Git::G3MDNG::Memory';
@@ -137,7 +138,7 @@ sub run_file
         }
     }
 
-    $save->($text);
+    return $text;
 }
 
 1;
