@@ -46,7 +46,10 @@ sub run
 
         my $text = $this->run_file($file, $blocks);
 
-        $save->($text);
+        if(defined($text))
+        {
+            $save->($text);
+        }
     }
 }
 
@@ -122,6 +125,12 @@ sub run_file
         print "> ";
         my $ans = <>;
         chomp $ans;
+
+        if($ans eq 'q')
+        {
+            print "Giving up on resolving $file.\n";
+            return undef
+        }
 
         Amling::Git::G3MDNG::Command::handle($this, $state, $ans);
     }
