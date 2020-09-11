@@ -31,6 +31,7 @@ use Amling::Git::G3MDNG::Command::Characters;
 use Amling::Git::G3MDNG::Command::Clowns;
 use Amling::Git::G3MDNG::Command::Diff3;
 use Amling::Git::G3MDNG::Command::Edit;
+use Amling::Git::G3MDNG::Command::Indents;
 use Amling::Git::G3MDNG::Command::Merge;
 use Amling::Git::G3MDNG::Command::Nav;
 use Amling::Git::G3MDNG::Command::NavConflict;
