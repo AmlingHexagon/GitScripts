@@ -43,6 +43,7 @@ sub alias_regex
 sub handle
 {
     my $this = shift;
+    my $loop = shift;
     my $state = shift;
     my $line = shift;
 
@@ -55,7 +56,7 @@ sub handle
             # capture args and importantly an empty array when there were no
             # capture args.
             my @match = map { substr($line, $-[$_], $+[$_] - $-[$_]) } (1..$#-);
-            return $this->handle2($state, @match);
+            return $this->handle2($loop, $state, @match);
         }
     }
 

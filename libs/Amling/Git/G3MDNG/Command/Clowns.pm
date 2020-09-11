@@ -23,6 +23,7 @@ sub new
 sub handle3
 {
     my $this = shift;
+    my $loop = shift;
     my $rest = shift;
 
     my $chunks = $rest->[$this->{'IDX'}];

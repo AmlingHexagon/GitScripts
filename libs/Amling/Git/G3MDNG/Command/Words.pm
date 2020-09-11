@@ -23,6 +23,7 @@ sub new
 sub handle3
 {
     my $this = shift;
+    my $loop = shift;
     my $rest = shift;
 
     my ($lhs_chunks, $mhs_chunks, $rhs_chunks) = @$rest;

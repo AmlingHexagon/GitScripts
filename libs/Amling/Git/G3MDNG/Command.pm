@@ -14,12 +14,13 @@ sub add_command
 
 sub handle
 {
+    my $loop = shift;
     my $state = shift;
     my $line = shift;
 
     for my $command (@commands)
     {
-        return if($command->handle($state, $line));
+        return if($command->handle($loop, $state, $line));
     }
 
     print "?\n";

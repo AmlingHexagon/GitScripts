@@ -122,7 +122,7 @@ sub run_file
         my $ans = <>;
         chomp $ans;
 
-        Amling::Git::G3MDNG::Command::handle($state, $ans);
+        Amling::Git::G3MDNG::Command::handle($this, $state, $ans);
     }
 
     my $text = $state->require_auto_resolve();

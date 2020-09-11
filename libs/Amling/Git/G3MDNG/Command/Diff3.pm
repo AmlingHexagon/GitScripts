@@ -11,6 +11,7 @@ use base ('Amling::Git::G3MDNG::Command::BaseReplace');
 sub handle3
 {
     my $class = shift;
+    my $loop = shift;
     my $rest = shift;
 
     my ($lhs_chunks, $mhs_chunks, $rhs_chunks) = @$rest;

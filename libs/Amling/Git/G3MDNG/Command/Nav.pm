@@ -30,6 +30,7 @@ sub args_regex
 sub handle2
 {
     my $this = shift;
+    my $loop = shift;
     my $state = shift;
     my $ct = shift || 1;
 

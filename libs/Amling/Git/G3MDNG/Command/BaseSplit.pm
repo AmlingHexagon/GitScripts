@@ -15,6 +15,7 @@ sub args_regex
 sub handle3
 {
     my $this = shift;
+    my $loop = shift;
     my $rest = shift;
     my $lhs_split = shift;
     my $mhs_split = shift;

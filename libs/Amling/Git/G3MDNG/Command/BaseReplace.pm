@@ -10,6 +10,7 @@ use base ('Amling::Git::G3MDNG::Command::Base');
 sub handle2
 {
     my $this = shift;
+    my $loop = shift;
     my $state = shift;
     my @match = @_;
 
@@ -19,7 +20,7 @@ sub handle2
     my ($type, @rest) = @$block;
     return 0 unless($type eq 'CONFLICT');
 
-    my $new_blocks = $this->handle3(\@rest, @match);
+    my $new_blocks = $this->handle3($loop, \@rest, @match);
     return 0 unless($new_blocks);
 
     my $desc = $this->{'ALIASES'}->[0];
