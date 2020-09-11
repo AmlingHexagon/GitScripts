@@ -57,7 +57,7 @@ sub rewrite
         }
         elsif($i == scalar(@$chunk) - 1)
         {
-            @chomp = ("CHOMP\n")
+            @chomp = ("CHOMP\n");
         }
         else
         {
