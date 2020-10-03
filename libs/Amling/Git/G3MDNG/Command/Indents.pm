@@ -55,7 +55,7 @@ sub rewrite
         if($chunk =~ s/\n$//)
         {
         }
-        elsif($i == scalar(@$chunk) - 1)
+        elsif($i == scalar(@$chunks) - 1)
         {
             @chomp = ("CHOMP\n");
         }
