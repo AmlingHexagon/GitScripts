@@ -73,16 +73,15 @@ sub rewrite
     my $ret = [];
     my $indent = 0;
     my $pending_blanks = 0;
-    for my $chunk (@$chunks)
+    for my $line (@lines)
     {
-        if($chunk eq '')
+        if($line eq '')
         {
             ++$pending_blanks;
             next;
         }
-        $chunk =~ /^( *)(.*)$/s || die;
+        $line =~ s/^( *)//s || die;
         my $indent1 = length($1);
-        my $line = $2;
 
         while($indent > $indent1)
         {
